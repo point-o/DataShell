@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @version 7/12/25
  */
 public interface Value {
-    //defined per class
+    // defined per class
     Result<Value> asNumber();
     Result<Value> asString();
     Result<Value> asBoolean();
@@ -20,6 +20,7 @@ public interface Value {
     Object getValue();
     
     public default Result<Value> add(Value other) {
+    	// likely broadcasts
         if (this.type().equals("list")) {
             return applyListOperation(this, other, (a, b) -> a.add(b));
         }
@@ -260,9 +261,9 @@ public interface Value {
             if (!left.type().equals("matrix")) {
                 return Result.error(Result.ErrorType.RUNTIME, "Internal error: left operand is not a matrix");
             }
-            
+
             @SuppressWarnings("unchecked")
-            List<List<Value>> leftMatrix = (List<List<Value>>) left.getValue();
+			List<List<Value>> leftMatrix = (List<List<Value>>) left.getValue();
             
             // again should've been prevented
             int totalElements = leftMatrix.size() * (leftMatrix.isEmpty() ? 0 : leftMatrix.get(0).size());

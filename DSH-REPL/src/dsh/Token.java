@@ -11,11 +11,11 @@ import java.math.BigDecimal;
 public class Token {
     private final TokenType type;
     private final String lexeme;
-    private final Object literal;
+    private final Value literal;
     private final int line;
     private final int column;
     
-    public Token(TokenType type, String lexeme, Object literal, int line, int column) {
+    public Token(TokenType type, String lexeme, Value literal, int line, int column) {
         this.type = type;
         this.lexeme = lexeme;
         this.literal = literal;
@@ -54,15 +54,15 @@ public class Token {
         return type + "('" + lexeme + "')";
     }
     
-    public static Token number(String lexeme, BigDecimal value, int line, int column) {
+    public static Token number(String lexeme, ANumber value, int line, int column) {
         return new Token(TokenType.NUMBER, lexeme, value, line, column);
     }
     
-    public static Token string(String lexeme, String value, int line, int column) {
+    public static Token string(String lexeme, AString value, int line, int column) {
         return new Token(TokenType.STRING, lexeme, value, line, column);
     }
     
-    public static Token bool(String lexeme, Boolean value, int line, int column) {
+    public static Token bool(String lexeme, ABoolean value, int line, int column) {
         return new Token(TokenType.BOOLEAN, lexeme, value, line, column);
     }
     

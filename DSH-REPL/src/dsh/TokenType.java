@@ -1,41 +1,47 @@
 package dsh;
 
 /**
- * Represents the different types of tokens
- * 
- * @author Ryan Pointer
- * @version 7/14/25
- */
+* Represents the different types of tokens
+*
+* @author Ryan Pointer
+* @version 7/14/25
+*/
 public enum TokenType {
     NUMBER,
     STRING,
     BOOLEAN,
 
-    IDENTIFIER,    // variable names, command names
-    
-    PLUS,          // +
-    MINUS,         // -
-    MULTIPLY,      // *
-    DIVIDE,        // /
-    MODULO,        // %
-    POWER,         // ^ or **
-    
-    ASSIGN,        // =
-    
-    LPAREN,        // (
-    RPAREN,        // )
-    LBRACKET,      // [
-    RBRACKET,      // ]
-    LBRACE,        // {
-    RBRACE,        // }
-    COMMA,         // ,
-    SEMICOLON,     // ;
-    
-    NEWLINE,       // \n (might need this?)
-    WHITESPACE,    // spaces, tabs
-    EOF,           // end of file
-    
+    IDENTIFIER, // variable names, command names
+
+    EXPRESSION, // to be handled independently by the calculator class
+
+    ASSIGN, // =
+
+    EQUALS,      // ==
+    NOT_EQUALS,  // !=
+    LESS_THAN,   // <
+    GREATER_THAN, // >
+    LESS_EQUAL,  // <=
+    GREATER_EQUAL, // >=
+
+    AND,         // &&
+    OR,          // ||
+    NOT,         // !
+
+    LPAREN,      // (
+    RPAREN,      // )
+    LBRACKET,    // [
+    RBRACKET,    // ]
+    LBRACE,      // {
+    RBRACE,      // }
+    COMMA,       // ,
+    SEMICOLON,   // ;
+
+    NEWLINE,     // \n (might need this? i dunno)
+    WHITESPACE,  // spaces, tabs
+    EOF,         // end of file
+
     IF, ELSE, WHILE, FOR, TRUE, FALSE, NULL,
-    
-    INVALID        // for malformed tokens (how do we handle this?)
+
+    INVALID      // for malformed tokens (how do we handle this?)
 }

@@ -10,6 +10,8 @@ import java.util.*;
  */
 public class Tokenizer {
     private final String source;
+    private final CommandRegistry commandRegistry;
+    private final MacroRegistry macroRegistry;
     private final List<Token> tokens = new ArrayList<>();
     private int start = 0;
     private int current = 0;
@@ -26,8 +28,10 @@ public class Tokenizer {
         "null", TokenType.NULL
     );
     
-    public Tokenizer(String source) {
+    public Tokenizer(String source, CommandRegistry commandRegistry, MacroRegistry macroRegistry) {
         this.source = source;
+        this.commandRegistry = commandRegistry;
+        this.macroRegistry = macroRegistry;
     }
     
     public List<Token> tokenize() {
@@ -76,7 +80,20 @@ public class Tokenizer {
                 addToken(Token.comma(",", line, column - 1));
                 break;
             case ';':
-                addToken(Token.semicolon(";", line, column - 1));
+                // Check if this is a macro (followed by identifier) or just a semicolon
+                if (isAlpha(peek())) {
+                    macro();
+                } else {
+                    addToken(Token.semicolon(";", line, column - 1));
+                }
+                break;
+            case ':':
+                // Check if this is a command (followed by identifier) or just a colon
+                if (isAlpha(peek())) {
+                    command();
+                } else {
+                    addToken(Token.colon(":", line, column - 1));
+                }
                 break;
             case '!':
                 if (match('=')) {
@@ -137,6 +154,42 @@ public class Tokenizer {
                     addToken(Token.invalid(String.valueOf(c), line, column - 1));
                 }
                 break;
+        }
+    }
+    
+    private void command() {
+        int startColumn = column - 1;
+        
+        // Consume the command name (already consumed ':')
+        while (isAlphaNumeric(peek()) || peek() == '_' || peek() == '-') {
+            advance();
+        }
+        
+        String fullLexeme = source.substring(start, current); // includes ':'
+        String commandName = source.substring(start + 1, current); // skip the ':'
+        
+        if (commandRegistry.exists(commandName)) {
+            addToken(Token.command(fullLexeme, commandName, line, startColumn));
+        } else {
+            addToken(Token.invalid("Unknown command: " + commandName, line, startColumn));
+        }
+    }
+    
+    private void macro() {
+        int startColumn = column - 1;
+        
+        // Consume the macro name (already consumed ';')
+        while (isAlphaNumeric(peek()) || peek() == '_' || peek() == '-') {
+            advance();
+        }
+        
+        String fullLexeme = source.substring(start, current); // includes ';'
+        String macroName = source.substring(start + 1, current); // skip the ';'
+        
+        if (macroRegistry.exists(macroName)) {
+            addToken(Token.macro(fullLexeme, macroName, line, startColumn));
+        } else {
+            addToken(Token.invalid("Unknown macro: " + macroName, line, startColumn));
         }
     }
     
@@ -249,8 +302,8 @@ public class Tokenizer {
                 case NULL:
                     addToken(Token.nullKeyword(text, line, startColumn));
                     break;
-			default:
-				break;
+                default:
+                    break;
             }
         } else {
             addToken(Token.identifier(text, line, startColumn));
@@ -279,7 +332,7 @@ public class Tokenizer {
     }
     
     private boolean isExpressionStart(char c) {
-    	// i WILL be changing this logic
+        // i WILL be changing this logic
         return c == '(' || c == '+' || c == '-' || c == '*' || c == '/' || c == '%';
     }
     

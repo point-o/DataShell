@@ -35,6 +35,7 @@ public enum TokenType {
     LBRACE,      // {
     RBRACE,      // }
     COMMA,       // ,
+    COLON,       // :
     SEMICOLON,   // ;
 
     NEWLINE,     // \n (might need this? i dunno)
@@ -42,6 +43,8 @@ public enum TokenType {
     EOF,         // end of file
 
     IF, ELSE, WHILE, FOR, TRUE, FALSE, NULL,
+    
+    COMMAND, MACRO,
 
     INVALID      // for malformed tokens (how do we handle this?)
 }

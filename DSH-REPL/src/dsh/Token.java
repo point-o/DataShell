@@ -74,6 +74,15 @@ public class Token {
         return new Token(TokenType.EXPRESSION, lexeme, line, column);
     }
 
+    // commands and macros
+    public static Token command(String lexeme, String commandName, int line, int column) {
+        return new Token(TokenType.COMMAND, lexeme, new AString(commandName), line, column);
+    }
+
+    public static Token macro(String lexeme, String macroName, int line, int column) {
+        return new Token(TokenType.MACRO, lexeme, new AString(macroName), line, column);
+    }
+
     // assignment
     public static Token assign(String lexeme, int line, int column) {
         return new Token(TokenType.ASSIGN, lexeme, line, column);
@@ -148,6 +157,11 @@ public class Token {
 
     public static Token semicolon(String lexeme, int line, int column) {
         return new Token(TokenType.SEMICOLON, lexeme, line, column);
+    }
+
+    // Colon for standalone usage
+    public static Token colon(String lexeme, int line, int column) {
+        return new Token(TokenType.COLON, lexeme, line, column);
     }
 
     // whitespace stuff

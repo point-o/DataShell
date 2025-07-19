@@ -35,8 +35,8 @@ public enum TokenType {
     LBRACE,      // {
     RBRACE,      // }
     COMMA,       // ,
-    COLON,       // :
-    SEMICOLON,   // ;
+    COLON,       // : (command prefix)
+    SEMICOLON,   // ; (macro prefix)
 
     NEWLINE,     // \n (might need this? i dunno)
     WHITESPACE,  // spaces, tabs

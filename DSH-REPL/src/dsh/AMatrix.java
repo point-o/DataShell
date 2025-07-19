@@ -91,8 +91,6 @@ public class AMatrix implements Value {
         normalizeMatrix();
     }
     
-    // ... (rest unchanged except add this. where needed)
-    
     private String[] parseCSVLine(String line) {
         List<String> values = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -221,10 +219,6 @@ public class AMatrix implements Value {
             normalizeMatrix();
         }
     }
-    
-    // ... (rest of your methods unchanged but with this. prefix where needed)
-
-    // For example:
 
     public int getRows() {
         return this.rows;

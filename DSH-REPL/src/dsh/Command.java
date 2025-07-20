@@ -14,11 +14,13 @@ class Command {
     private String description;
     private String hint;
     private CommandFunction function;
+	protected int params;
     
-    public Command(String description, String hint, CommandFunction function) {
+    public Command(String description, String hint, CommandFunction function, int params) {
         this.description = description;
         this.hint = hint;
         this.function = function;
+        this.params = params;
     }
     
     public String getDescription() {

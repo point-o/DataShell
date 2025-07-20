@@ -25,121 +25,141 @@ public class CommandRegistry {
         registerCommand("load", new Command(
             "Load CSV file as matrix",
             "load <filename> [hasheader]",
-            this::loadMatrix
+            this::loadMatrix,
+            2
         ));
         
         registerCommand("peek", new Command(
             "Show first few rows of matrix",
             "peek <matrix> [rows=5]",
-            this::peekMatrix
+            this::peekMatrix,
+            2
         ));
         
         registerCommand("size", new Command(
             "Show matrix dimensions",
             "size <matrix>",
-            this::matrixSize
+            this::matrixSize,
+            1
         ));
         
         registerCommand("cols", new Command(
             "Show column summary",
             "cols <matrix>",
-            this::columnSummary
+            this::columnSummary,
+            1
         ));
         
         registerCommand("sum", new Command(
             "Sum of numeric values in matrix/row/column",
             "sum <matrix> [row|col] [index]",
-            this::sumValues
+            this::sumValues,
+            3
         ));
         
         registerCommand("count", new Command(
             "Count non-null values",
             "count <matrix> [row|col] [index]",
-            this::countValues
+            this::countValues,
+            3
         ));
         
         registerCommand("unique", new Command(
             "Count unique values in column",
             "unique <matrix> <col_index>",
-            this::uniqueValues
+            this::uniqueValues,
+            2
         ));
         
         registerCommand("find", new Command(
             "Find rows where column equals value",
             "find <matrix> <col_index> <value>",
-            this::findRows
+            this::findRows,
+            3
         ));
 
         registerCommand("row", new Command(
             "Extract row as list",
             "row <matrix> <index>",
-            this::getRow
+            this::getRow,
+            2
         ));
         
         registerCommand("col", new Command(
             "Extract column as list", 
             "col <matrix> <index>",
-            this::getColumn
+            this::getColumn,
+            2
         ));
         
         registerCommand("range", new Command(
             "Get numeric range (min-max) of data",
             "range <matrix|list> [col_index]",
-            this::getRange
+            this::getRange,
+            2
         ));
         
         registerCommand("sample", new Command(
             "Get random sample of rows",
             "sample <matrix> [count=5]",
-            this::sampleRows
+            this::sampleRows,
+            2
         ));
         
         registerCommand("sort", new Command(
             "Sort matrix by column or sort list",
             "sort <matrix|list> [col_index]",
-            this::sortData
+            this::sortData,
+            2
         ));
         
         registerCommand("filter", new Command(
             "Filter data by condition",
             "filter <matrix|list> <col_index|all> <op> <value>",
-            this::filterData
+            this::filterData,
+            4
         ));
         
         registerCommand("head", new Command(
             "Show first N items",
             "head <matrix|list> [count=10]",
-            this::headData
+            this::headData,
+            2
         ));
         
         registerCommand("tail", new Command(
             "Show last N items", 
             "tail <matrix|list> [count=10]",
-            this::tailData
+            this::tailData,
+            2
         ));
         
         registerCommand("len", new Command(
             "Get length/size",
             "len <matrix|list>",
-            this::getLength
+            this::getLength,
+            1
         ));
         
         registerCommand("slice", new Command(
             "Get subset of data",
             "slice <matrix|list> <start> [end]",
-            this::sliceData
+            this::sliceData,
+            3
         ));
         
         registerCommand("contains", new Command(
             "Check if value exists",
             "contains <matrix|list> <value> [col_index]", 
-            this::containsValue
+            this::containsValue,
+            3
         ));
         
         registerCommand("stats", new Command(
             "Quick statistics summary",
             "stats <matrix|list> [col_index]",
-            this::getStats
+            this::getStats,
+            2
         ));
     }
     
@@ -974,4 +994,8 @@ public class CommandRegistry {
     public java.util.Map<String, Command> getAllCommands() {
         return new java.util.HashMap<>(commands);
     }
+
+	public boolean exists(String commandName) {
+		return commands.get(commandName) != null;
+	}
 }

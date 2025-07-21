@@ -1,78 +1,121 @@
 package dsh;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-/**
- * Registry for user-defined macros. Stores macros in memory and persists them to disk.
- */
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Collections;
+
 public class MacroRegistry {
     private final Map<String, Macro> macros = new HashMap<>();
-    private final Path storageFile;
-    public MacroRegistry(Path storageFile) {
-        this.storageFile = storageFile;
-        loadFromDisk().ifError(failure -> {
-            System.err.println("Failed to load macros: " + failure.getErrorMessage());
-        });
-    }
-    public Result<Void> add(Macro macro) {
-        macros.put(macro.getName(), macro);
-        return saveToDisk();
-    }
-    public Result<Void> delete(String name) {
-        if (macros.remove(name) != null) {
-            return saveToDisk();
+    
+    /**
+     * Defines a new macro in the registry.
+     * If a macro with the same name already exists, it will be replaced.
+     * 
+     * @param macro The macro to define
+     * @return true if this is a new macro, false if it replaced an existing one
+     */
+    public boolean define(Macro macro) {
+        if (macro == null) {
+            throw new IllegalArgumentException("Macro cannot be null");
         }
-        return Result.error(Result.ErrorType.INVALID_ARGUMENT, "Macro not found: " + name);
+        
+        boolean isNew = !macros.containsKey(macro.getName());
+        macros.put(macro.getName(), macro);
+        return isNew;
     }
+    
+    /**
+     * Gets a macro by name.
+     * 
+     * @param name The name of the macro to retrieve
+     * @return Optional containing the macro if found, empty otherwise
+     */
     public Optional<Macro> get(String name) {
-        return Optional.ofNullable(macros.get(name));
+        if (name == null || name.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        
+        return Optional.ofNullable(macros.get(name.trim()));
     }
-    public boolean contains(String name) {
-        return macros.containsKey(name);
+    
+    /**
+     * Checks if a macro with the given name exists.
+     * 
+     * @param name The name to check
+     * @return true if a macro with this name exists
+     */
+    public boolean exists(String name) {
+        return name != null && macros.containsKey(name.trim());
     }
-    public Set<String> listNames() {
+    
+    /**
+     * Removes a macro from the registry.
+     * 
+     * @param name The name of the macro to remove
+     * @return true if the macro was removed, false if it didn't exist
+     */
+    public boolean remove(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        
+        return macros.remove(name.trim()) != null;
+    }
+    
+    /**
+     * Gets all macro names in the registry.
+     * 
+     * @return Unmodifiable set of macro names
+     */
+    public Set<String> getMacroNames() {
         return Collections.unmodifiableSet(macros.keySet());
     }
-    private Result<Void> saveToDisk() {
-        try (BufferedWriter writer = Files.newBufferedWriter(storageFile)) {
-            for (Macro macro : macros.values()) {
-                writer.write(";" + macro.getName());
-                writer.newLine();
-                for (String line : macro.getRawLines()) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-                writer.write("end");
-                writer.newLine();
-            }
-            return Result.ok(null);
-        } catch (IOException e) {
-            return Result.error(Result.ErrorType.RUNTIME, "Failed to save macros: " + e.getMessage(), e);
-        }
+    
+    /**
+     * Gets the number of macros in the registry.
+     * 
+     * @return The count of registered macros
+     */
+    public int size() {
+        return macros.size();
     }
-    private Result<Void> loadFromDisk() {
-        if (!Files.exists(storageFile)) return Result.ok(null);
-        try (BufferedReader reader = Files.newBufferedReader(storageFile)) {
-            String line;
-            Macro current = null;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith(";")) {
-                    current = new Macro(line.substring(1).trim());
-                } else if (line.equals("end")) {
-                    if (current != null) {
-                        macros.put(current.getName(), current);
-                        current = null;
-                    }
-                } else if (current != null) {
-                    current.addRawLine(line);
-                }
-            }
-            return Result.ok(null);
-        } catch (IOException e) {
-            return Result.error(Result.ErrorType.RUNTIME, "Failed to load macros: " + e.getMessage(), e);
+    
+    /**
+     * Checks if the registry is empty.
+     * 
+     * @return true if no macros are registered
+     */
+    public boolean isEmpty() {
+        return macros.isEmpty();
+    }
+    
+    /**
+     * Removes all macros from the registry.
+     */
+    public void clear() {
+        macros.clear();
+    }
+    
+    /**
+     * Gets a string representation of all registered macros.
+     * 
+     * @return String listing all macro names and their line counts
+     */
+    @Override
+    public String toString() {
+        if (macros.isEmpty()) {
+            return "MacroRegistry: empty";
         }
+        
+        StringBuilder sb = new StringBuilder("MacroRegistry (" + macros.size() + " macros):\n");
+        for (Map.Entry<String, Macro> entry : macros.entrySet()) {
+            Macro macro = entry.getValue();
+            sb.append(String.format("  - %s (%d lines)%n", 
+                entry.getKey(), 
+                macro.getLineCount()));
+        }
+        return sb.toString();
     }
 }

@@ -8,15 +8,21 @@ import java.math.BigDecimal;
 
 /**
  * Tokenizer optimized for REPL environments with Result-based error handling
+ * 
+ * usage loop:
+ * reset(new input)
+ * tokenize
+ * 
+ * @author Ryan Pointer
+ * @version 7/20/25
  */
-public class ReplTokenizer {
+public class Tokenizer {
     private String input;
     private List<Token> tokens;
     private int current = 0;
     private int line = 1;
     private int column = 1;
     
-    // Tracks if we're in the middle of parsing something that needs continuation
     private boolean needsMoreInput = false;
     
     private static final Map<String, TokenType> keywords = new HashMap<>();
@@ -33,7 +39,7 @@ public class ReplTokenizer {
         keywords.put("not", TokenType.NOT);
     }
     
-    public ReplTokenizer() {
+    public Tokenizer() {
         this.tokens = new ArrayList<>();
     }
     

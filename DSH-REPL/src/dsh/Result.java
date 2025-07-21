@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * 
  * @param <T> The type of the success value
  * @author Ryan Pointer
- * @version 7/12/25
+ * @version 7/20/25
  */
 public abstract class Result<T> {
     
@@ -39,6 +39,11 @@ public abstract class Result<T> {
     public abstract String getErrorMessage();
     public abstract ErrorType getErrorType();
     public abstract Throwable getCause();
+    
+    // Convenience method for getting error message - useful for the Evaluator
+    public String getError() {
+        return getErrorMessage();
+    }
     
     public T getValueOrDefault(T defaultValue) {
         return isOk() ? getValue() : defaultValue;
@@ -218,6 +223,7 @@ public abstract class Result<T> {
         SYNTAX("Syntax error"),
         NULL_VALUE("Null value error"),
         RUNTIME("Runtime error"),
+        EVALUATION("Evaluation error"),  // Added for Phase 2 Evaluator
         UNSUPPORTED_OPERATION("Unsupported operation"),
         INDEX_OUT_OF_BOUNDS("Index out of bounds"),
         INVALID_ARGUMENT("Invalid argument");

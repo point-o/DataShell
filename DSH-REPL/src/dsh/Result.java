@@ -226,7 +226,8 @@ public abstract class Result<T> {
         EVALUATION("Evaluation error"),  // Added for Phase 2 Evaluator
         UNSUPPORTED_OPERATION("Unsupported operation"),
         INDEX_OUT_OF_BOUNDS("Index out of bounds"),
-        INVALID_ARGUMENT("Invalid argument");
+        INVALID_ARGUMENT("Invalid argument"), 
+        NOT_IMPLEMENTED("This feature isn't implemented yet :(");
         
         private final String description;
         

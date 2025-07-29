@@ -1,8 +1,6 @@
 package dsh;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Collections;
 
@@ -26,18 +24,22 @@ public class MacroRegistry {
         return isNew;
     }
     
+    public boolean hasMacro(String name) {
+        return name != null && macros.containsKey(name.trim());
+    }
+    
     /**
      * Gets a macro by name.
      * 
      * @param name The name of the macro to retrieve
-     * @return Optional containing the macro if found, empty otherwise
+     * @return The macro if found, null otherwise
      */
-    public Optional<Macro> get(String name) {
+    public Macro getMacro(String name) {
         if (name == null || name.trim().isEmpty()) {
-            return Optional.empty();
+            return null;
         }
         
-        return Optional.ofNullable(macros.get(name.trim()));
+        return macros.get(name.trim());
     }
     
     /**

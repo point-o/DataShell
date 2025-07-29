@@ -12,7 +12,7 @@ public class Macro {
     public Macro(String name) {
         this.name = name;
     }
-
+    
     public void record(Scanner scanner, Tokenizer tokenizer) {
         System.out.println("╭─ Recording macro '" + name + "'");
         System.out.println("│ Commands: 'end' to finish, 'undo' to remove last line, 'show' to preview");
@@ -152,5 +152,4 @@ public class Macro {
         rawLines.clear();
         tokenLines.clear();
     }
-
 }

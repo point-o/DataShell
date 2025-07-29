@@ -19,7 +19,7 @@ public class Tokenizer {
     private final List<Token> tokens;
     
     private static final Pattern NUMBER_PATTERN = 
-    	Pattern.compile("-?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?");
+        Pattern.compile("-?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?");
     private static final Pattern STRING_PATTERN = 
         Pattern.compile("\"([^\"\\\\]|\\\\.)*\"");
     private static final Pattern BOOLEAN_PATTERN = 
@@ -105,7 +105,11 @@ public class Tokenizer {
         int startPos = position;
         position++; // Skip prefix
         
-        int endPos = findTokenEnd();
+        if (type == Token.TokenType.EXPRESSION) {
+            return tokenizeNestedExpression(startPos);
+        }
+        
+        int endPos = findTokenEnd(type);
         if (endPos == startPos + 1) {
             return Result.error(Result.ErrorType.SYNTAX,
                 String.format("Empty %s at position %d", 
@@ -119,12 +123,74 @@ public class Tokenizer {
         return Result.ok(null);
     }
     
-    private int findTokenEnd() {
+    private Result<Void> tokenizeNestedExpression(int startPos) {
+        int currentPos = position;
+        boolean inString = false;
+        
+        // First check if it's a parenthesized expression
+        if (currentPos < input.length() && input.charAt(currentPos) == '(') {
+            int parenLevel = 1;
+            currentPos++;
+            
+            while (currentPos < input.length() && parenLevel > 0) {
+                char c = input.charAt(currentPos);
+                
+                if (c == '"' && (currentPos == 0 || input.charAt(currentPos - 1) != '\\')) {
+                    inString = !inString;
+                }
+                
+                if (!inString) {
+                    if (c == '(') {
+                        parenLevel++;
+                    } else if (c == ')') {
+                        parenLevel--;
+                    }
+                }
+                
+                currentPos++;
+            }
+            
+            if (parenLevel > 0) {
+                return Result.error(Result.ErrorType.SYNTAX,
+                    String.format("Unterminated parenthesized expression starting at position %d", startPos));
+            }
+        } else {
+            // Regular expression - go until whitespace or special character
+            while (currentPos < input.length()) {
+                char c = input.charAt(currentPos);
+                if (Character.isWhitespace(c) || SPECIAL_CHARS.matcher(String.valueOf(c)).matches()) {
+                    break;
+                }
+                currentPos++;
+            }
+        }
+        
+        if (currentPos == startPos + 1) {
+            return Result.error(Result.ErrorType.SYNTAX,
+                String.format("Empty expression at position %d", startPos));
+        }
+        
+        String content = input.substring(startPos, currentPos);
+        tokens.add(new Token(Token.TokenType.EXPRESSION, content, startPos, currentPos));
+        position = currentPos;
+        
+        return Result.ok(null);
+    }
+    
+    private int findTokenEnd(Token.TokenType type) {
         int pos = position;
         while (pos < input.length()) {
             char c = input.charAt(pos);
-            if (Character.isWhitespace(c) || SPECIAL_CHARS.matcher(String.valueOf(c)).matches()) {
-                break;
+            if (type == Token.TokenType.EXPRESSION) {
+                // For expressions, we stop at whitespace or special chars
+                if (Character.isWhitespace(c) || SPECIAL_CHARS.matcher(String.valueOf(c)).matches()) {
+                    break;
+                }
+            } else {
+                // For commands and macros, we only stop at whitespace
+                if (Character.isWhitespace(c)) {
+                    break;
+                }
             }
             pos++;
         }

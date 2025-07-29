@@ -7,7 +7,7 @@ import java.util.Map;
  * An enviornment to store variables
  * 
  * @author Ryan Pointer
- * @version 7/9/25
+ * @version 7/29/25
  */
 public class Environment {
     private final Map<String, Value> variables = new HashMap<>();
@@ -23,4 +23,8 @@ public class Environment {
     public boolean has(String name) {
         return variables.containsKey(name);
     }
+
+	public int size() {
+		return variables.size();
+	}
 }

@@ -24,7 +24,7 @@ public class MacroRegistry {
         return isNew;
     }
     
-    public boolean hasMacro(String name) {
+    public boolean has(String name) {
         return name != null && macros.containsKey(name.trim());
     }
     
@@ -34,7 +34,7 @@ public class MacroRegistry {
      * @param name The name of the macro to retrieve
      * @return The macro if found, null otherwise
      */
-    public Macro getMacro(String name) {
+    public Macro get(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }

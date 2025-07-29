@@ -20,7 +20,10 @@ public class CommandRegistry {
         this.commands = new HashMap<>();
         initializeCommands();
     }
-
+    
+    public int size() {
+    	return commands.size();
+    }
     private void initializeCommands() {
         registerCommand("load", new Command(
             "Load CSV file as matrix",

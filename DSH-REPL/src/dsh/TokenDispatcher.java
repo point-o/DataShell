@@ -1,7 +1,6 @@
 package dsh;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Dispatches tokens for evaluation in the correct order.
@@ -41,7 +40,6 @@ public class TokenDispatcher {
     }
     
     private boolean hasAssignmentPattern(List<Token> tokens) {
-        // Look for pattern: VARIABLE ASSIGNMENT ...
         return tokens.size() >= 2 && 
                tokens.get(0).getType() == Token.TokenType.VARIABLE &&
                tokens.get(1).getType() == Token.TokenType.ASSIGNMENT;
@@ -119,17 +117,12 @@ public class TokenDispatcher {
     }
     
     private Result<Value> handleExpression(Token token) {
-        // Remove the # prefix and evaluate the expression
         String expression = token.getValue().substring(1);
-        
-        // TODO: Implement expression evaluation
-        // This would typically involve parsing math expressions, function calls, etc.
-        return Result.error(Result.ErrorType.NOT_IMPLEMENTED, 
-            "Expression evaluation not yet implemented: " + expression);
+        Calculator calc = new Calculator(environment);
+        return calc.evaluate(expression);
     }
     
     private Result<Value> handleMacro(Token token) {
-        // Remove the ; prefix and look up the macro
         String macroName = token.getValue().substring(1);
         
         if (!macroRegistry.has(macroName)) {
@@ -138,7 +131,7 @@ public class TokenDispatcher {
         }
         
         try {
-            Optional<Macro> macro = macroRegistry.get(macroName);
+            Macro macro = macroRegistry.get(macroName);
             return executeMacro(macro);
         } catch (Exception e) {
             return Result.error(Result.ErrorType.RUNTIME, 
@@ -192,8 +185,6 @@ public class TokenDispatcher {
         
         try {
             Command command = commandRegistry.getCommand(commandName);
-            // Commands typically don't take additional arguments from the token stream
-            // If you need parameterized commands, you'd parse arguments here
             Value result = command.execute(environment);
             return Result.ok(result);
         } catch (Exception e) {

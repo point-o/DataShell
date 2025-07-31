@@ -2,6 +2,7 @@ package dsh;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +34,7 @@ public class Tokenizer {
     
     // Reserved keywords that can't be used as identifiers (in case i add control flow)
     private static final List<String> RESERVED_KEYWORDS = 
-    	    List.of("if", "else", "while", "for", "return", "break", "continue");
+            Arrays.asList("if", "else", "while", "for", "return", "break", "continue");
     
     public Tokenizer(String input) {
         this.input = input != null ? input : "";

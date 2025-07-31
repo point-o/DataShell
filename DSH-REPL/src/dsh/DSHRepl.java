@@ -22,9 +22,6 @@ public class DSHRepl {
         this.tokenizer = new Tokenizer("");
         this.reader = new BufferedReader(new InputStreamReader(System.in));
         this.running = true;
-        
-        // Register built-in REPL commands
-        registerReplCommands();
     }
     
     public void start() {
@@ -134,11 +131,6 @@ public class DSHRepl {
             default:
                 return false; // Not a REPL command
         }
-    }
-    
-    private void registerReplCommands() {
-        // Commands are registered in CommandRegistry's initializeCommands() method
-        // This method is kept for potential future REPL-specific commands
     }
     
     private String formatValue(Value value) {

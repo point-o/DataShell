@@ -141,15 +141,24 @@ public class TokenDispatcher {
     }
     
     private Result<Value> evaluateSingleToken(Token token) {
-        return switch (token.getType()) {
-            case LITERAL -> handleLiteral(token);
-            case EXPRESSION -> handleExpression(token);
-            case MACRO -> handleMacro(token);
-            case COMMAND -> handleCommand(token);
-            case VARIABLE -> handleVariable(token);
-            case ASSIGNMENT -> Result.error(Result.ErrorType.SYNTAX, 
-                "Unexpected assignment token");
-        };
+        switch (token.getType()) {
+            case LITERAL:
+                return handleLiteral(token);
+            case EXPRESSION:
+                return handleExpression(token);
+            case MACRO:
+                return handleMacro(token);
+            case COMMAND:
+                return handleCommand(token);
+            case VARIABLE:
+                return handleVariable(token);
+            case ASSIGNMENT:
+                return Result.error(Result.ErrorType.SYNTAX, 
+                    "Unexpected assignment token");
+            default:
+                return Result.error(Result.ErrorType.SYNTAX, 
+                    "Unknown token type: " + token.getType());
+        }
     }
     
     private Result<Value> handleLiteral(Token token) {

@@ -8,12 +8,11 @@ Instead of a full AST, it uses a dispatcher with simplification logic.
 
 Weak typing (no type declarations, just values)
 Variable assignments (x = 10)
+Lists [1,2,3]
 Basic arithmetic (#3+5*(2+4))^2)
 
 Nested tokens are a weak point since I use a dispatcher, so nested tokens were something I couldn't figure out fully. Something like this wouldn't be tokenized correctly:
 :isprime 1+2
-
-The project is unfinished, features like macros aren't quite done and intake for lists and matrices is currently lacking.
 
 ##Demo:
 

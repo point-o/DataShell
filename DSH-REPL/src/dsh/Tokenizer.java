@@ -24,6 +24,8 @@ public class Tokenizer {
         Pattern.compile("\"([^\"\\\\]|\\\\.)*\"");
     private static final Pattern BOOLEAN_PATTERN = 
         Pattern.compile("true|false");
+    private static final Pattern FILEPATH_PATTERN = 
+        Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_./-]*\\.[a-zA-Z0-9]+");
     private static final Pattern IDENTIFIER_PATTERN = 
         Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
     private static final Pattern SPECIAL_CHARS = 
@@ -222,6 +224,12 @@ public class Tokenizer {
             return tokenizeBoolean(booleanMatcher.group());
         }
         
+        // Try filepath (before identifier to catch file.ext patterns)
+        Matcher filepathMatcher = FILEPATH_PATTERN.matcher(remaining);
+        if (filepathMatcher.lookingAt()) {
+            return tokenizeFilepath(filepathMatcher.group());
+        }
+        
         // Try identifier
         return tryTokenizeIdentifier();
     }
@@ -275,6 +283,17 @@ public class Tokenizer {
         Value booleanValue = new ABoolean(boolValue);
         
         tokens.add(new Token(Token.TokenType.LITERAL, matched, startPos, endPos, booleanValue));
+        position = endPos;
+        return Result.ok(true);
+    }
+    
+    private Result<Boolean> tokenizeFilepath(String matched) {
+        int startPos = position;
+        int endPos = position + matched.length();
+        
+        // Create a string value for the filepath
+        Value filepathValue = new AString(matched);
+        tokens.add(new Token(Token.TokenType.LITERAL, matched, startPos, endPos, filepathValue));
         position = endPos;
         return Result.ok(true);
     }

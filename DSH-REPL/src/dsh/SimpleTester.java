@@ -32,6 +32,7 @@ public class SimpleTester {
         
         // Test expressions (if Calculator exists)
         testCase("Expression", "#(2 + 3)", tokenizer, dispatcher);
+        testCase("Complex Expression", "j = #((2+(4/9))^2)", tokenizer, dispatcher);
         
         // Test unknown macro
         testCase("Unknown Macro", ";nonexistent", tokenizer, dispatcher);

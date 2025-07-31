@@ -30,7 +30,6 @@ public class Calculator {
             
             expression = removeOuterParentheses(expression);
             
-            // Try to parse as number
             try {
                 BigDecimal number = new BigDecimal(expression);
                 return Result.ok(new ANumber(number));
@@ -66,9 +65,24 @@ public class Calculator {
                 }
                 return Result.error(Result.ErrorType.RUNTIME, "Undefined variable '" + expression + "'");
             }
-
-            // Try to parse as binary operation
+            
+            // this is some really confusing precedence
+            // the main idea is that we start with this:
+            // 2 + 3 * 4
+            // looking at it we have to attach each number to an operator
+            // 2 goes to +, and 4 to *
+            // but 3 is in between + and *
+            // so it must side with the operator of greater precedence which is *
+            // 2+ 3*4
+            // yielding this tree
+            //         +
+            //        / \
+            //       2   *
+            //          / \
+            //         3   4
             String[] parts = splitExpressionByPrecedence(expression);
+            // first go: ["2", "+", "3*4"]
+            // then if successful, recursively evaluate the left and right parts
             if (parts != null) {
                 return evaluate(parts[0])
                     .flatMap(left -> evaluate(parts[2])
@@ -108,7 +122,7 @@ public class Calculator {
     private boolean hasBalancedParentheses(String expr) {
         int parenBalance = 0;
         int bracketBalance = 0;
-        boolean inString = false;
+        boolean inString = false; //in quotes flag
         char prev = 0;
         
         for (char c : expr.toCharArray()) {
@@ -119,7 +133,7 @@ public class Calculator {
                 if (c == ')') parenBalance--;
                 if (c == '[') bracketBalance++;
                 if (c == ']') bracketBalance--;
-                if (parenBalance < 0 || bracketBalance < 0) return false;
+                if (parenBalance < 0 || bracketBalance < 0) return false; // being < 0 implies there are more ')' than '('
             }
             prev = c;
         }
@@ -132,9 +146,9 @@ public class Calculator {
 
     private String[] splitExpressionByPrecedence(String expression) {
         String[][] precedenceLevels = {
-            {"+", "-"},
-            {"*", "/", "%"},
-            {"^"}
+            {"+", "-"}, // 1
+            {"*", "/", "%"}, // 2
+            {"^"} // 3
         };
         
         for (String[] operators : precedenceLevels) {

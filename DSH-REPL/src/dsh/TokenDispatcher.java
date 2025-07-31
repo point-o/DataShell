@@ -1,6 +1,7 @@
 package dsh;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Dispatches tokens for evaluation in the correct order.
@@ -79,7 +80,7 @@ public class TokenDispatcher {
      * 1. Literals (already parsed)
      * 2. Expressions
      * 3. Macros  
-     * 4. Commands
+     * 4. Commands (with their parameters)
      * 5. Variables
      */
     private Result<Value> evaluateTokens(List<Token> tokens) {
@@ -87,11 +88,56 @@ public class TokenDispatcher {
             return evaluateSingleToken(tokens.get(0));
         }
         
-        // For multiple tokens, we need to decide how to combine them
-        // This depends on your language semantics. For now, let's assume
-        // we evaluate the last meaningful token (common in REPLs)
+        // Check if the first token is a command - if so, group with parameters
+        if (tokens.get(0).getType() == Token.TokenType.COMMAND) {
+            return handleCommandWithParameters(tokens);
+        }
+        
+        // For other multi-token scenarios, evaluate the last token
+        // (This preserves existing behavior for non-command cases)
         Token lastToken = tokens.get(tokens.size() - 1);
         return evaluateSingleToken(lastToken);
+    }
+    
+    /**
+     * Handle a command token with its parameters
+     */
+    private Result<Value> handleCommandWithParameters(List<Token> tokens) {
+        Token commandToken = tokens.get(0);
+        List<Token> parameterTokens = tokens.subList(1, tokens.size());
+        
+        // Remove the : prefix and look up the command
+        String commandName = commandToken.getValue().substring(1);
+        
+        if (!commandRegistry.hasCommand(commandName)) {
+            return Result.error(Result.ErrorType.RUNTIME, 
+                "Unknown command: " + commandName);
+        }
+        
+        try {
+            Command command = commandRegistry.getCommand(commandName);
+            
+            // Evaluate parameter tokens to get their values
+            List<Value> parameters = new ArrayList<>();
+            for (Token paramToken : parameterTokens) {
+                Result<Value> paramResult = evaluateSingleToken(paramToken);
+                if (paramResult.isError()) {
+                    return Result.error(Result.ErrorType.RUNTIME,
+                        String.format("Failed to evaluate parameter for command '%s': %s",
+                            commandName, paramResult.getErrorMessage()));
+                }
+                parameters.add(paramResult.getValue());
+            }
+            
+            // Convert list to array and execute command
+            Value[] paramArray = parameters.toArray(new Value[0]);
+            Value result = command.execute(environment, paramArray);
+            return Result.ok(result);
+            
+        } catch (Exception e) {
+            return Result.error(Result.ErrorType.RUNTIME, 
+                "Command execution failed: " + commandName + " - " + e.getMessage());
+        }
     }
     
     private Result<Value> evaluateSingleToken(Token token) {
@@ -175,7 +221,7 @@ public class TokenDispatcher {
     }
     
     private Result<Value> handleCommand(Token token) {
-        // Remove the : prefix and look up the command
+        // Handle single command without parameters (backwards compatibility)
         String commandName = token.getValue().substring(1);
         
         if (!commandRegistry.hasCommand(commandName)) {
@@ -185,7 +231,7 @@ public class TokenDispatcher {
         
         try {
             Command command = commandRegistry.getCommand(commandName);
-            Value result = command.execute(environment);
+            Value result = command.execute(environment); // No parameters
             return Result.ok(result);
         } catch (Exception e) {
             return Result.error(Result.ErrorType.RUNTIME, 

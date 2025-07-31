@@ -1,8 +1,6 @@
 package dsh;
-
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * An enviornment to store variables
  * 
@@ -23,8 +21,12 @@ public class Environment {
     public boolean has(String name) {
         return variables.containsKey(name);
     }
-
-	public int size() {
-		return variables.size();
-	}
+    
+    public int size() {
+        return variables.size();
+    }
+    
+    public Map<String, Value> getAllVariables() {
+        return new HashMap<>(variables);
+    }
 }

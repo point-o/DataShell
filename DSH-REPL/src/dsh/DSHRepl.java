@@ -147,10 +147,8 @@ public class DSHRepl {
     }
     
     private void printWelcome() {
-        System.out.println("╔══════════════════════════════════════╗");
-        System.out.println("║        DSH Interactive Shell        ║");
-        System.out.println("║     Dynamic Shell Processor v1.0    ║");
-        System.out.println("╚══════════════════════════════════════╝");
+        System.out.println("        DSH Interactive Shell        ");
+        System.out.println("     Dynamic Shell Processor v1.0    ");
         System.out.println();
         System.out.println("Type 'help' for available commands, 'exit' to quit.");
         System.out.println();

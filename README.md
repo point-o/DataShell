@@ -14,3 +14,7 @@ Nested tokens are a weak point since I use a dispatcher, so nested tokens were s
 :isprime 1+2
 
 The project is unfinished, features like macros aren't quite done and intake for lists and matrices is currently lacking.
+
+##Demo:
+
+https://www.loom.com/share/f48e5092f3fb4fb68ff6a1e14e9133a6?sid=53a7ddf2-cb96-4d7b-a399-39df0a690083

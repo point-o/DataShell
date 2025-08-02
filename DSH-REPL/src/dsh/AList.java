@@ -9,7 +9,7 @@ import java.util.List;
  * All elements must be of the same runtime type extending Value.
  * 
  * @author Ryan Pointer
- * @version 7/12/25
+ * @version 8/2/25
  */
 public class AList<T extends Value> implements Value {
     private List<T> elements;
@@ -35,16 +35,33 @@ public class AList<T extends Value> implements Value {
     @Override
     public Result<Value> asString() {
         try {
+        	int printedSize = 9;
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < elements.size(); ++i) {
-                sb.append(elements.get(i));
+            for (int i = 0; i < printedSize && i < elements.size(); ++i) {
+                Value element = elements.get(i);
+                if (element instanceof ANumber) {
+                    BigDecimal num = ((ANumber) element).getValue();
+                    sb.append(num.stripTrailingZeros().toPlainString());
+                } else if (element instanceof AList || element instanceof AString) { // nested lists in the future? matrix is implemented but i dunno
+                    sb.append(element.asString());
+                } else {
+                    sb.append(element.toString()); // fallback
+                }
+                
                 if (i < elements.size() - 1) {
                     sb.append(", ");
                 }
             }
+            if (printedSize < elements.size()) {
+            	sb.append("..., ");
+            	BigDecimal lastNum = ((ANumber)elements.get(elements.size()-1)).getValue();
+            	sb.append(lastNum.stripTrailingZeros().toPlainString());
+            }
+            	
             return Result.ok(new AString(sb.toString()));
         } catch (Exception e) {
-            return Result.error(Result.ErrorType.RUNTIME, "Error converting list to string: " + e.getMessage(), e);
+            return Result.error(Result.ErrorType.RUNTIME, 
+                "Error converting list to string: " + e.getMessage(), e);
         }
     }
 
